@@ -6,40 +6,53 @@ const fs = require("fs");
 let folderName = pageData[0]["name"];
 let questions = pageData[0]["questions"];
 
-// añadir la estructura a index.vue
+// Añadimos la estructura al index.vue de la carpeta /nombreProyecto
 fs.writeFileSync(
   `../src/pages/${folderName}/index.vue`,
   `<template>
-        <div>
-            <h1>${folderName}</h1>
-        </div>
-    <div>`
+    <div class="container">
+      <article>
+        <header>
+            <div>
+                <h1>${folderName}</h1>
+            </div>
+        </header>`
 );
 
+// Creamos cada una de las paginas del proyecto
 questions.forEach((page) => {
   fs.writeFileSync(
     `../src/pages/${folderName}/${page.question.replaceAll(" ", "_")}.vue`,
     `<template>
-        <div>
-            <h1>${page.question}</h1>
-            <p>${page.text}</p>
-        </div>        
-        <router-link to="/${folderName}">Back</router-link>
-    </template>`
+        <div class="container">
+          <article>
+              <header>
+                <h1 style="text-transform: capitalize;">${page.question}</h1>
+              </header>
+              <p>${page.text}</p>
+              <footer>
+                <router-link to="/${folderName}"><button>Back</button></router-link>
+              </footer>
+          </article>
+        </div>
+    </template>
+    `
   );
   // write link in the index.vue file
   fs.appendFileSync(
     `../src/pages/${folderName}/index.vue`,
     `<p>
-    <router-link to="/${folderName}/${page.question.replaceAll(" ", "_")}">${
-      page.question
-    }</router-link>
+    <router-link style="text-transform: capitalize;" to="/${folderName}/${page.question
+      .replaceAll(" ", "_")
+      .toUpperCase()}">${page.question}</router-link>
     </p>`
   );
 });
 
+// Cerramos el archivo index.vue
 fs.appendFileSync(
   `../src/pages/${folderName}/index.vue`,
-  `</div>
+  `</article>  
+</div>
     </template>`
 );
