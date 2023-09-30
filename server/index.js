@@ -2,9 +2,23 @@
 const pageData = require("../page_data.json");
 const fs = require("fs");
 
+// ELiminador de acentos
+const removeAccents = (str) => {
+  console.log(str)
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+} 
+
 // iterar sobre el array de objetos y crear un archivo dentro de la carpeta pages por cada objeto
 let folderName = pageData[0]["name"];
 let questions = pageData[0]["questions"];
+
+// Quitamos los acentos a los titulos
+questions.map((element)=>{
+  element.question = removeAccents(element.question);
+})
+
+// Eliminamos todo lo que haya en la carpeta
+deleteFolder(`../src/pages/${folderName}`);
 
 // Añadimos la estructura al index.vue de la carpeta /nombreProyecto
 fs.writeFileSync(
@@ -56,3 +70,26 @@ fs.appendFileSync(
 </div>
     </template>`
 );
+
+function deleteFolder(carpetaAEliminar){
+fs.readdir(carpetaAEliminar, (err, files) => {
+  if (err) {
+    console.error(`Error al leer la carpeta: ${err}`);
+    return;
+  }
+
+  // Iterar sobre los archivos y eliminar cada uno de ellos
+  files.forEach((file) => {
+    const filePath = path.join(carpetaAEliminar, file);
+
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error(`Error al eliminar ${filePath}: ${err}`);
+      } else {
+        console.log(`Se eliminó ${filePath}`);
+      }
+    });
+  });
+});
+
+}
